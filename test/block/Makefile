@@ -1,6 +1,10 @@
 COMPILE_OPTS := --binary -j 0 -Wall -Wno-fatal
 export ROOT_DIR := ../..
 
+BLOCKS = alu
+
+all: $(foreach block,${BLOCKS},${block}_sim)
+
 # Testing Makefile variables
 # %_echo:
 # 	@echo "$*"
