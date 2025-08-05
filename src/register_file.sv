@@ -18,7 +18,7 @@ module register_file
 
   logic [31:0][XLEN - 1:0] bench;  // Main memory we have
 
-  always_ff @(posedge clk or posedge rst) begin
+  always_ff @(posedge clk or negedge reset_n) begin
     // Clear all the memory
     if (reset_n == 1'b0) begin
       bench <= '{default: 'b0};

@@ -1,4 +1,4 @@
-COMPILE_OPTS := --binary -j 0 -Wall -Wno-fatal
+COMPILE_OPTS := --binary -j 0 -Wall -Wno-fatal -Wno-TIMESCALEMOD -Werror-WIDTHEXPAND
 export ROOT_DIR := ../..
 
 BLOCKS = alu

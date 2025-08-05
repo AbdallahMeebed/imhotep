@@ -46,13 +46,19 @@ package imhotep_pkg;
   parameter int LSU_WIDTH = 16;
 
   // The operations that are going to be implemented
-  parameter logic [6:0] OPCODE_OP = 7'h33;
-  parameter logic [6:0] OPCODE_OPIMM = 7'h13;
-  parameter logic [6:0] OPCODE_STORE = 7'h23;
-  parameter logic [6:0] OPCODE_LOAD = 7'h03;
-  parameter logic [6:0] OPCODE_BRANCH = 7'h63;
-  parameter logic [6:0] OPCODE_JALR = 7'h67;
-  parameter logic [6:0] OPCODE_JAL = 7'h6f;
+  localparam logic [6:0] OPCODE_OP = 7'h33;
+  localparam logic [6:0] OPCODE_OPIMM = 7'h13;
+  localparam logic [6:0] OPCODE_STORE = 7'h23;
+  localparam logic [6:0] OPCODE_LOAD = 7'h03;
+  localparam logic [6:0] OPCODE_BRANCH = 7'h63;
+  localparam logic [6:0] OPCODE_JALR = 7'h67;
+  localparam logic [6:0] OPCODE_JAL = 7'h6f;
+
+  // TODO
+  localparam logic [6:0] OPCODE_FENCE = 7'h0f;
+  localparam logic [6:0] OPCODE_AUIPC = 7'h17;
+  localparam logic [6:0] OPCODE_LUI = 7'h37;
+  localparam logic [6:0] OPCODE_SYSTEM = 7'h73;
 
 endpackage
 
