@@ -1,0 +1,3 @@
+${ROOT_DIR}/src/include/imhotep_pkg.sv
+ram.sv
+ram_tb.sv

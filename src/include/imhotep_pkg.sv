@@ -2,6 +2,7 @@
 package imhotep_pkg;
 
   parameter int XLEN = 32;  // Address space length
+  parameter int RAM_WIDTH = 16;
   localparam int RFADDR = 5;
   localparam int RFLEN = 2 ** RFADDR;
 
@@ -28,7 +29,7 @@ package imhotep_pkg;
     LSU_LHU,
     LSU_LB,
     LSU_LBU,
-    LSU_NOP   // Do nothing
+    LSU_NOP
   } op_lsu_e;
 
   parameter int CSR_WIDTH = 3;
@@ -39,13 +40,10 @@ package imhotep_pkg;
     CSR_BLTU,
     CSR_BGE,
     CSR_BGEU,
-    CSR_JMP,   // Always 1
+    CSR_JMP,
     CSR_NOP
   } op_csr_e;
 
-  parameter int LSU_WIDTH = 16;
-
-  // The operations that are going to be implemented
   localparam logic [6:0] OPCODE_OP = 7'h33;
   localparam logic [6:0] OPCODE_OPIMM = 7'h13;
   localparam logic [6:0] OPCODE_STORE = 7'h23;

@@ -1,6 +1,8 @@
 ./src/alu.sv
+./src/csr.sv
 ./src/decoder.sv
 ./src/include/imhotep_pkg.sv
+./src/lsu.sv
 ./src/register_file.sv
 ./src/scoreboard.sv
 ./test/block/alu_tb.sv
