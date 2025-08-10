@@ -12,7 +12,7 @@ module ram
 );
 
   localparam longint N_ENTRY = 2 ** RAM_WIDTH;
-  logic [N_ENTRY-1:0][7:0] storage;
+  logic [7:0] storage[N_ENTRY];
 
   always_ff @(posedge clk or negedge reset_n) begin
     // Clear all the memory
@@ -39,13 +39,7 @@ module ram
       case (width_i)
         2'b00: data_o = {24'b0, storage[addr_i]};
         2'b01: data_o = {16'b0, storage[addr_i+1], storage[addr_i]};
-        2'b10:
-        data_o = {
-          storage[addr_i+3],
-          storage[addr_i+2],
-          storage[addr_i+1],
-          storage[addr_i]
-        };
+        2'b10: data_o = {storage[addr_i+3], storage[addr_i+2], storage[addr_i+1], storage[addr_i]};
         default: data_o = '0;
       endcase
     end

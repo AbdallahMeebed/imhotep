@@ -18,48 +18,57 @@ module ram_tb
     forever #5 clk = ~clk;
   end
 
+  `define GEN_ADDR(x) {{(RAM_WIDTH - 16){1'b0}}, x}
+
   initial begin
     $monitor("time=%3d, w_rn=%h, width=%h, in=%h, out=%h, addr=%h", $time, w_rn_i, width_i, data_i,
              data_o, addr_i);
 
-    // $display("Number: %d", 1<<6);
     reset_n = 1'b0;
     #10 reset_n = 1'b1;
-    #10 addr_i = 16'h1000;
-    data_i  = '1;
-    width_i = 2'b00;
-    w_rn_i  = 1'b1;
+    // #10 addr_i = `GEN_ADDR(16'h1000);
+    // data_i  = '1;
+    // width_i = 2'b00;
+    // w_rn_i  = 1'b1;
+    //
+    // #10 addr_i = `GEN_ADDR(16'h1000);
+    // width_i = 2'b00;
+    // w_rn_i  = 1'b0;
+    //
+    // #10 addr_i = `GEN_ADDR(16'h2000);
+    // data_i  = '1;
+    // width_i = 2'b01;
+    // w_rn_i  = 1'b1;
+    //
+    // #10 addr_i = `GEN_ADDR(16'h2000);
+    // width_i = 2'b01;
+    // w_rn_i  = 1'b0;
 
-    #10 addr_i = 16'h1000;
-    width_i = 2'b00;
-    w_rn_i  = 1'b0;
-
-    #10 addr_i = 16'h2000;
-    data_i  = '1;
-    width_i = 2'b01;
-    w_rn_i  = 1'b1;
-
-    #10 addr_i = 16'h2000;
-    width_i = 2'b01;
-    w_rn_i  = 1'b0;
-
-    #10 addr_i = 16'h3000;
-    data_i  = '1;
+    #10 addr_i = `GEN_ADDR(16'h3000);
+    data_i  = 32'h76543210;
     width_i = 2'b10;
     w_rn_i  = 1'b1;
 
-    #10 addr_i = 16'h3000;
+    #10 addr_i = `GEN_ADDR(16'h3000);
     width_i = 2'b10;
     w_rn_i  = 1'b0;
 
-    #10 addr_i = 16'h3000;
-    data_i  = '0;
-    width_i = 2'b01;
-    w_rn_i  = 1'b1;
-
-    #10 addr_i = 16'h3000;
+    #10 addr_i = `GEN_ADDR(16'h1000);
     width_i = 2'b10;
     w_rn_i  = 1'b0;
+
+    #10 addr_i = `GEN_ADDR(16'h3000);
+    width_i = 2'b10;
+    w_rn_i  = 1'b0;
+
+    // #10 addr_i = `GEN_ADDR(16'h3000);
+    // data_i  = '0;
+    // width_i = 2'b01;
+    // w_rn_i  = 1'b1;
+    //
+    // #10 addr_i = `GEN_ADDR(16'h3000);
+    // width_i = 2'b10;
+    // w_rn_i  = 1'b0;
 
     #1 $finish;
   end
