@@ -6,15 +6,18 @@ package imhotep_pkg;
   localparam int RFADDR = 5;
   localparam int RFLEN = 2 ** RFADDR;
 
-  parameter int ALU_OP_WIDTH = 3;
+  parameter int ALU_OP_WIDTH = 4;
   typedef enum logic [ALU_OP_WIDTH - 1:0] {
     ALU_ADD,
     ALU_SUB,
     ALU_AND,
     ALU_XOR,
     ALU_SLT,
+    ALU_SLTU,
     ALU_JMPR,  // Add and make LSB = 0
     ALU_OR,
+    ALU_SLL,
+    ALU_SRA,
     ALU_NOP
   } op_alu_e;
 
@@ -43,6 +46,13 @@ package imhotep_pkg;
     CSR_JMP,
     CSR_NOP
   } op_csr_e;
+
+  parameter int WB_MUX_WIDTH = 2;
+  typedef enum logic [WB_MUX_WIDTH - 1 : 0] {
+    WB_SEL_ALU,
+    WB_SEL_LSU,
+    WB_SEL_PC_INC
+  } wb_mux_e;
 
   localparam logic [6:0] OPCODE_OP = 7'h33;
   localparam logic [6:0] OPCODE_OPIMM = 7'h13;

@@ -2,7 +2,12 @@
 module decoder
   import imhotep_pkg::*;
 (
-    input [31:0] instr_i,
+    // Fetch interface
+    input logic [31:0] instr_i,
+    input logic [31:0] pc_i,
+
+    // Control signals
+    output wb_mux_e wb_mux,
 
     // ALU Interface
     output op_alu_e op_alu_o,
@@ -44,10 +49,9 @@ module decoder
     op_alu_o = ALU_NOP;
     op_lsu_o = LSU_NOP;
     op_csr_o = CSR_NOP;
+    wb_mux = WB_SEL_ALU;
     alu_in1_o = '0;
     alu_in2_o = '0;
-    query_1_o = '0;
-    query_2_o = '0;
     immediate = '0;
     err_o = '0;
 
@@ -56,10 +60,13 @@ module decoder
         case (instr_i[14:12])
           // For ADD need to check if it's sub at instr[30]
           3'b000: op_alu_o = (instr_i[30]) ? ALU_SUB : ALU_ADD;
-          3'b111: op_alu_o = ALU_AND;
-          3'b110: op_alu_o = ALU_OR;
-          3'b100: op_alu_o = ALU_XOR;
+          3'b001: op_alu_o = ALU_SLL;
           3'b010: op_alu_o = ALU_SLT;
+          3'b011: op_alu_o = ALU_SLTU;
+          3'b100: op_alu_o = ALU_XOR;
+          3'b101: op_alu_o = (instr_i[30]) ? ALU_SRA : ALU_SRL;
+          3'b110: op_alu_o = ALU_OR;
+          3'b111: op_alu_o = ALU_AND;
           default: begin
             rd_addr_o = '0;  // prevent any write because we don't recognize the operation
             err_o = 1'b1;
@@ -71,22 +78,34 @@ module decoder
       end
 
       OPCODE_OPIMM: begin
-        immediate = {{20{instr_i[31]}}, instr_i[31:20]};  // Sign extension
+        immediate = {{(XLEN - 1) {instr_i[31]}}, instr_i[31:20]};  // Sign extension
         r2_addr_o = '0;
         case (instr_i[14:12])
           3'b000: op_alu_o = ALU_ADD;
-          3'b111: op_alu_o = ALU_AND;
-          3'b110: op_alu_o = ALU_OR;
-          3'b100: op_alu_o = ALU_XOR;
+          3'b001: begin
+            op_alu_o  = ALU_SLL;
+            immediate = {{(XLEN - 1) {1'b0}}, instr_i[25:20]};
+          end
           3'b010: op_alu_o = ALU_SLT;
+          3'b011: op_alu_o = ALU_SLTU;
+          3'b100: op_alu_o = ALU_XOR;
+          3'b101: begin
+            op_alu_o  = (instr_i[30]) ? ALU_SRA : ALU_SRL;
+            immediate = {{(XLEN - 1) {1'b0}}, instr_i[25:20]};
+          end
+          3'b110: op_alu_o = ALU_OR;
+          3'b111: op_alu_o = ALU_AND;
           default: begin
             rd_addr_o = '0;  // prevent any write because we don't recognize the operation
             err_o = 1'b1;
           end
+
         endcase
 
         alu_in1_o = r1_data_i;
         alu_in2_o = immediate;
+
+        r2_addr_o = '0;  // Disable scoreboard query
       end
 
       // Decode load store instructions
@@ -104,6 +123,12 @@ module decoder
             err_o = 1'b1;
           end
         endcase
+
+        op_alu_o  = ALU_ADD;
+        alu_in1_o = r1_data_i;
+        alu_in2_o = immediate;
+
+        r2_addr_o = '0;  // Disable scoreboard query
       end
 
       OPCODE_STORE: begin
@@ -118,6 +143,10 @@ module decoder
             err_o = 1'b1;
           end
         endcase
+
+        op_alu_o  = ALU_ADD;
+        alu_in1_o = r1_data_i;
+        alu_in2_o = immediate;
       end
 
       OPCODE_JAL: begin
@@ -126,6 +155,10 @@ module decoder
         };  // Sign extension
         op_alu_o = ALU_ADD;
         op_csr_o = CSR_JMP;
+        wb_mux = WB_SEL_PC_INC;
+
+        alu_in1_o = pc_i;
+        alu_in2_o = immediate;
         // stall_o = 1'b1;  // To add bubble
       end
 
@@ -134,12 +167,14 @@ module decoder
         op_alu_o  = ALU_JMPR;
         op_csr_o  = CSR_JMP;
         // stall_o   = 1'b1;  // To add bubble
+
+        alu_in1_o = pc_i;
+        alu_in2_o = immediate;
       end
 
       OPCODE_BRANCH: begin
         // stall_o   = 1'b1;  // To add bubble
         immediate = {{20{instr_i[31]}}, instr_i[7], instr_i[30:25], instr_i[11:8], 1'b0};
-        op_alu_o  = ALU_ADD;  // NEEDS TO ALSO TAKE RS1 AND RS2 for the jump block
         rd_addr_o = '0;  // Avoid writes because rd not specified
         case (instr_i[14:12])
           3'b000: op_csr_o = CSR_BEQ;
@@ -153,6 +188,10 @@ module decoder
             err_o = 1'b1;
           end
         endcase
+
+        op_alu_o  = ALU_ADD;
+        alu_in1_o = pc_i;
+        alu_in2_o = immediate;
       end
       default: err_o = 1'b1;
     endcase

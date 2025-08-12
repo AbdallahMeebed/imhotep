@@ -9,8 +9,8 @@ module alu_tb
   op_alu_e op;
 
   alu u_alu (
-      .in1_i(a),
-      .in2_i(b),
+      .a_i(a),
+      .b_i(b),
       .op_i(op),
       .pc_i(pc),
       .out_o(out),

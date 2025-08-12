@@ -6,3 +6,5 @@
 ./src/register_file.sv
 ./src/scoreboard.sv
 ./test/block/alu_tb.sv
+./test/block/ram.sv
+./test/block/ram_tb.sv
